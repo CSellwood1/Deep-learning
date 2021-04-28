@@ -36,3 +36,18 @@ download_images(spp_recs = orangetip_recs, spp_folder = "orangetip")
 
 #we want to separate the last 100 photos from each sp into folders for testing the model later
 image_files_path <- "images" # path to folder with photos
+# list of spp to model; these names must match folder names
+spp_list <- dir(image_files_path) # Automatically pick up names
+# number of spp classes (i.e. 3 species in this example)
+output_n <- length(spp_list)
+# Create test, and species sub-folders
+for(folder in 1:output_n){
+  dir.create(paste("test", spp_list[folder], sep="/"), recursive=TRUE)}
+# Now copy over spp_501.jpg to spp_600.jpg using two loops, deleting the photos
+# from the original images folder after the copy
+for(folder in 1:output_n){
+  for(image in 501:600){
+    src_image  <- paste0("images/", spp_list[folder], "/spp_", image, ".jpg")
+    dest_image <- paste0("test/"  , spp_list[folder], "/spp_", image, ".jpg")
+    file.copy(src_image, dest_image)
+    file.remove(src_image)}}
