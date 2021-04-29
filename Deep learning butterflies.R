@@ -98,3 +98,47 @@ cat("Class labels vs index mapping")
 train_image_array_gen$class_indices
 #shows 0, 1, 2
 
+#look at one image
+plot(as.raster(train_image_array_gen[[1]][[1]][8,,,]))
+
+#define parameters for the model
+# number of training samples
+train_samples <- train_image_array_gen$n
+# number of validation samples
+valid_samples <- valid_image_array_gen$n
+# define batch size and number of epochs
+batch_size <- 32 # Useful to define explicitly as we'll use it later
+epochs <- 10 # How long to keep training going for
+
+#define structure of CNN
+# initialise model
+model <- keras_model_sequential()
+
+# add layers
+model %>%
+  layer_conv_2d(filter = 32, kernel_size = c(3,3), input_shape = c(img_width, img_height, channels), activation = "relu") %>%
+  
+  # Second hidden layer
+  layer_conv_2d(filter = 16, kernel_size = c(3,3), activation = "relu") %>%
+  
+  # Use max pooling
+  layer_max_pooling_2d(pool_size = c(2,2)) %>%
+  layer_dropout(0.25) %>%
+  
+  # Flatten max filtered output into feature vector 
+  # and feed into dense layer
+  layer_flatten() %>%
+  layer_dense(100, activation = "relu") %>%
+  layer_dropout(0.5) %>%
+  
+  # Outputs from dense layer are projected onto output layer
+  layer_dense(output_n, activation = "softmax") 
+
+#check the structure
+print(model) #looks good!
+
+# Compile the model
+model %>% compile(
+  loss = "categorical_crossentropy",
+  optimizer = optimizer_rmsprop(lr = 0.0001, decay = 1e-6),
+  metrics = "accuracy")
