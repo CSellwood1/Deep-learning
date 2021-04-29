@@ -142,3 +142,26 @@ model %>% compile(
   loss = "categorical_crossentropy",
   optimizer = optimizer_rmsprop(lr = 0.0001, decay = 1e-6),
   metrics = "accuracy")
+###
+
+# Train the model with fit_generator
+history <- model %>% fit_generator(
+  # training data
+  train_image_array_gen,
+  
+  # epochs
+  steps_per_epoch = as.integer(train_samples / batch_size), 
+  epochs = epochs, 
+  
+  # validation data
+  validation_data = valid_image_array_gen,
+  validation_steps = as.integer(valid_samples / batch_size),
+  
+  # print progress
+  verbose = 2)
+
+#assess results
+plot(history)
+#plots suggest there is overtraining after about epoch 7/8, as the validation accuracy gets stuck around 55% despite training accuracy up to 75%
+#however, is a small dataset, so this isn't toooo bad
+
