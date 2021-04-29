@@ -198,3 +198,49 @@ test_image_array_gen <- flow_images_from_directory(path_test,
 model %>% evaluate_generator(test_image_array_gen, steps = test_image_array_gen$n)
 
 #gives accuracy of 52%, only slightly lower than validation dataset
+
+###
+#unbalanced data
+#lets predict the butterfly species found in each test photograph
+predictions <- model %>% 
+  predict_generator(
+    generator = test_image_array_gen,
+    steps = test_image_array_gen$n
+  ) %>% as.data.frame
+colnames(predictions) <- spp_list #makes a table of probability of a photo containing each butterfly sp
+
+#create a confusion matrix, takes the highest probability from each row
+# Create 3 x 3 table to store data
+confusion <- data.frame(matrix(0, nrow=3, ncol=3), row.names=spp_list)
+colnames(confusion) <- spp_list
+
+obs_values <- factor(c(rep(spp_list[1],100),
+                       rep(spp_list[2], 100),
+                       rep(spp_list[3], 100)))
+pred_values <- factor(colnames(predictions)[apply(predictions, 1, which.max)])
+
+library(caret)
+conf_mat <- confusionMatrix(data = pred_values, reference = obs_values)
+conf_mat
+
+#this shows sensitivity and specificity for each butterfly sp
+
+###
+#predicting for a single image
+# Original image
+test_image_plt <- imager::load.image("test/hollyblue/spp_508.jpg")
+plot(test_image_plt)
+# Need to import slightly differently resizing etc. for Keras
+test_image <- image_load("test/hollyblue/spp_508.jpg",
+                         target_size = target_size)
+
+test_image <- image_to_array(test_image)
+test_image <- array_reshape(test_image, c(1, dim(test_image)))
+test_image <- test_image/255
+# Now make the prediction, and print out nicely
+pred <- model %>% predict(test_image)
+pred <- data.frame("Species" = spp_list, "Probability" = t(pred))
+pred <- pred[order(pred$Probability, decreasing=T),][1:3,]
+pred$Probability <- paste(round(100*pred$Probability,2),"%")
+pred
+
