@@ -4,3 +4,6 @@
 .Ruserdata
 
 .jpg
+.Rdata
+.httr-oauth
+.DS_Store

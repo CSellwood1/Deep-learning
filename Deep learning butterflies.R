@@ -1,5 +1,5 @@
 #butterfly citizen science data for deep learning
-
+usethis::use_git()
 library(rinat)#for retrieving records
 library(sf)
 
