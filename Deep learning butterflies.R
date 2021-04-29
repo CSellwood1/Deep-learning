@@ -60,7 +60,7 @@ library(keras)
 #scale down image sizes
 img_width <- 150
 img_height <- 150
-target_size <- c(img_width, img_height)
+target_size <- c(img_width, img_height)#set target size
 
 # Full-colour Red Green Blue = 3 channels
 channels <- 3
@@ -68,4 +68,33 @@ channels <- 3
 train_data_gen = image_data_generator(
   rescale = 1/255,
   validation_split = 0.2)
+#
+#load in training and validation images
+#seed of 42 is a random number generator - enures reproducibility
+train_image_array_gen <- flow_images_from_directory(image_files_path, 
+                                                    train_data_gen,
+                                                    target_size = target_size,
+                                                    class_mode = "categorical",
+                                                    classes = spp_list,
+                                                    subset = "training",
+                                                    seed = 42)
+
+valid_image_array_gen <- flow_images_from_directory(image_files_path, 
+                                                    train_data_gen,
+                                                    target_size = target_size,
+                                                    class_mode = "categorical",
+                                                    classes = spp_list,
+                                                    subset = "validation",
+                                                    seed = 42)
+# Check that things seem to have been read in OK
+cat("Number of images per class:")
+## Number of images per class:
+table(factor(train_image_array_gen$classes))
+## 
+##   0   1   2 
+## 400 400 400
+cat("Class labels vs index mapping")
+## Class labels vs index mapping
+train_image_array_gen$class_indices
+#shows 0, 1, 2
 
