@@ -180,4 +180,21 @@ save.image("animals.RData")
 
 ###
 
+#test the model with test images
+path_test <- "test"
 
+test_data_gen <- image_data_generator(rescale = 1/255)
+
+test_image_array_gen <- flow_images_from_directory(path_test,
+                                                   test_data_gen,
+                                                   target_size = target_size,
+                                                   class_mode = "categorical",
+                                                   classes = spp_list,
+                                                   shuffle = FALSE, # do not shuffle the images around
+                                                   batch_size = 1,  # Only 1 image at a time
+                                                   seed = 123)
+
+#runs through all the images
+model %>% evaluate_generator(test_image_array_gen, steps = test_image_array_gen$n)
+
+#gives accuracy of 52%, only slightly lower than validation dataset
