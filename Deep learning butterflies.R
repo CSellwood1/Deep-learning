@@ -51,3 +51,21 @@ for(folder in 1:output_n){
     dest_image <- paste0("test/"  , spp_list[folder], "/spp_", image, ".jpg")
     file.copy(src_image, dest_image)
     file.remove(src_image)}}
+
+###training the model
+
+#setup
+#load keras
+library(keras)
+#scale down image sizes
+img_width <- 150
+img_height <- 150
+target_size <- c(img_width, img_height)
+
+# Full-colour Red Green Blue = 3 channels
+channels <- 3
+# Rescale colour hue from 255 to between zero and 1
+train_data_gen = image_data_generator(
+  rescale = 1/255,
+  validation_split = 0.2)
+
