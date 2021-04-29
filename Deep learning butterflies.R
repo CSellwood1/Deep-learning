@@ -165,3 +165,19 @@ plot(history)
 #plots suggest there is overtraining after about epoch 7/8, as the validation accuracy gets stuck around 55% despite training accuracy up to 75%
 #however, is a small dataset, so this isn't toooo bad
 
+#save model for future uses
+
+# The imager package also has a save.image function, so unload it to
+# avoid any confusion
+detach("package:imager", unload = TRUE)
+
+# The save.image function saves your whole R workspace
+save.image("animals.RData")
+
+# Saves only the model, with all its weights and configuration, in a special
+# hdf5 file on its own. You can use load_model_hdf5 to get it back.
+#model %>% save_model_hdf5("animals_simple.hdf5")
+
+###
+
+
